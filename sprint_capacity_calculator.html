@@ -14,92 +14,96 @@
   th:first-child, td:first-child { text-align:left; }
   th { background:#f3f3f3; }
   tfoot td { font-weight:600; background:#fafafa; }
-  input[type=number], select { width:100%; padding:6px; border:1px solid #ccc; border-radius:6px; font-size:14px; }
+  input[type=number], select, textarea, input[type=text], input[type=date] {
+    width:100%; padding:6px; border:1px solid #ccc; border-radius:6px; font-size:14px;
+  }
   .btn { padding:10px 14px; border-radius:6px; cursor:pointer; background:#2fa06a; border:none; color:#fff; font-weight:600; margin-top:10px; }
+  .btn:disabled { opacity:0.7; cursor:not-allowed; }
   .expl { font-size:12px; color:#666; margin-bottom:10px; }
   .summary { font-size:14px; line-height:1.5; margin-top:16px; }
-</style>
-</head>
-<style>
+  .summary h3 { margin-top:12px; margin-bottom:4px; }
   .container { display:flex; flex-wrap:nowrap; gap:24px; }
   .form-section { flex:0 0 460px; }
   .summary-section { flex:1; background:#fff; padding:20px; border-radius:8px; border:1px solid #ddd; height:fit-content; position:sticky; top:20px; }
+  .inline-field { display:flex; gap:10px; align-items:center; }
 </style>
+</head>
 <body>
 <div class="container">
   <div class="form-section">
-<h1>Sprintkapacitetsräknare (per person)</h1>
-<p>Ett verktyg för att räkna ut realistisk kapacitet per sprint baserat på forskning om fokus, kontextbyten och planerat bortfall.</p>
+    <h1>Sprintkapacitetsräknare (per person)</h1>
+    <p>Ett verktyg för att räkna ut realistisk kapacitet per sprint baserat på forskning om fokus, kontextbyten och planerat bortfall.</p>
 
-<div class="card">
-  <h2>Sprintinformation</h2>
+    <div class="card">
+      <h2>Sprintinformation</h2>
 
-  <label>Sprintnamn</label>
-  <input id="sprintName" type="text" placeholder="t.ex. TC Sprint 12">
-  <br><br>
+      <label>Sprintnamn</label>
+      <input id="sprintName" type="text" placeholder="t.ex. TC Sprint 12">
+      <br><br>
 
-  <label>Sprintdatum</label>
-  <input id="sprintDate" type="text" placeholder="t.ex. 24 nov – 5 dec">
-  <br><br>
+      <label>Sprintdatum</label>
+      <input id="sprintDate" type="text" placeholder="t.ex. 24 nov – 5 dec">
+      <br><br>
 
-  <label>Sprintmål</label>
-  <textarea id="sprintGoal" rows="3" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:6px; font-size:14px;" placeholder="Beskriv sprintens mål..."></textarea>
-  <br><br>
+      <label>Sprintmål</label>
+      <textarea id="sprintGoal" rows="3" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:6px; font-size:14px;" placeholder="Beskriv sprintens mål..."></textarea>
+      <br><br>
 
-  <label>Sprint startdatum</label>
-  <input id="sprintStart" type="date">
+      <label>Sprint startdatum</label>
+      <input id="sprintStart" type="date">
 
-  <label>Sprint slutdatum</label>
-  <input id="sprintEnd" type="date">
-  <br><br>
+      <label>Sprint slutdatum</label>
+      <input id="sprintEnd" type="date">
+      <br><br>
 
-  <label>Arbetsfria dagar inom sprinten</label>
-  <input id="redDays" type="number" min="0" value="0"> inom sprinten</label>
-  <input id="redDays" type="number" min="0" value="0">
-</div>
+      <label for="redDays">Arbetsfria dagar inom sprinten</label>
+      <div class="inline-field">
+        <input id="redDays" type="number" min="0" value="0" aria-describedby="redDaysHelp">
+        <span id="redDaysHelp" class="expl" style="margin:0;">Beräknas automatiskt från datum & helgdagar, men kan justeras.</span>
+      </div>
+    </div>
 
-<div class="card">
-  <h2>Gemensamma sprintinställningar</h2></h2></h2>
+    <div class="card">
+      <h2>Gemensamma sprintinställningar</h2>
 
-  <label>Standard-brus (%)</label>
-  <input id="brusPct" type="number" min="0" max="50" value="20">
-  <div class="expl">Brus = fokusförlust, kontextbyten, kommunikation och övrigt oförutsägbart.</div>
+      <label>Standard-brus (%)</label>
+      <input id="brusPct" type="number" min="0" max="50" value="20">
+      <div class="expl">Brus = fokusförlust, kontextbyten, kommunikation och övrigt oförutsägbart.</div>
 
-  <label>Vem gör tech-debt denna sprint?</label>
-  <select id="techDebtPerson">
-    <option>Carina</option>
-    <option>Olle</option>
-    <option>Torbjörn</option>
-    <option>Daniel</option>
-    <option>Felix</option>
-    <option>Boris</option>
-  </select>
-  <div class="expl">Den som gör tech-debt tappar ca 7.25 timmar denna sprint.</div>
-</div>
-</div>
+      <label>Vem gör tech-debt denna sprint?</label>
+      <select id="techDebtPerson">
+        <option>Carina</option>
+        <option>Olle</option>
+        <option>Torbjörn</option>
+        <option>Daniel</option>
+        <option>Felix</option>
+        <option>Boris</option>
+      </select>
+      <div class="expl">Den som gör tech-debt tappar ca 7.25 timmar denna sprint.</div>
+    </div>
 
-<div class="card">
-  <h2>Frånvaro & övrigt bortfall per person</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Person</th>
-        <th>Frånvaro (dagar)</th>
-        <th>Övrigt (dagar)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>Carina</td><td><input id="abs_Carina" type="number" step="0.5" value="0"></td><td><input id="oth_Carina" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Olle</td><td><input id="abs_Olle" type="number" step="0.5" value="0"></td><td><input id="oth_Olle" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Torbjörn</td><td><input id="abs_Torbjorn" type="number" step="0.5" value="0"></td><td><input id="oth_Torbjorn" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Daniel</td><td><input id="abs_Daniel" type="number" step="0.5" value="0"></td><td><input id="oth_Daniel" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Felix</td><td><input id="abs_Felix" type="number" step="0.5" value="0"></td><td><input id="oth_Felix" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Boris</td><td><input id="abs_Boris" type="number" step="0.5" value="0"></td><td><input id="oth_Boris" type="number" step="0.5" value="0"></td></tr>
-    </tbody>
-  </table>
-</div>
+    <div class="card">
+      <h2>Frånvaro & övrigt bortfall per person</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Person</th>
+            <th>Frånvaro (dagar)</th>
+            <th>Övrigt (dagar)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Carina</td><td><input id="abs_Carina" type="number" step="0.5" value="0"></td><td><input id="oth_Carina" type="number" step="0.5" value="0"></td></tr>
+          <tr><td>Olle</td><td><input id="abs_Olle" type="number" step="0.5" value="0"></td><td><input id="oth_Olle" type="number" step="0.5" value="0"></td></tr>
+          <tr><td>Torbjörn</td><td><input id="abs_Torbjorn" type="number" step="0.5" value="0"></td><td><input id="oth_Torbjorn" type="number" step="0.5" value="0"></td></tr>
+          <tr><td>Daniel</td><td><input id="abs_Daniel" type="number" step="0.5" value="0"></td><td><input id="oth_Daniel" type="number" step="0.5" value="0"></td></tr>
+          <tr><td>Felix</td><td><input id="abs_Felix" type="number" step="0.5" value="0"></td><td><input id="oth_Felix" type="number" step="0.5" value="0"></td></tr>
+          <tr><td>Boris</td><td><input id="abs_Boris" type="number" step="0.5" value="0"></td><td><input id="oth_Boris" type="number" step="0.5" value="0"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-</div>
   <div class="summary-section">
     <button class="btn" onclick="calculate()">Beräkna kapacitet</button>
 
@@ -142,17 +146,43 @@ function calcRedDays() {
 }
 
 function calculate() {
+  const sprintName = document.getElementById("sprintName").value.trim();
+  const sprintDate = document.getElementById("sprintDate").value.trim();
+  const sprintGoal = document.getElementById("sprintGoal").value.trim();
+  const sprintStart = document.getElementById("sprintStart").value;
+  const sprintEnd = document.getElementById("sprintEnd").value;
+
   const people = ["Carina","Olle","Torbjörn","Daniel","Felix","Boris"];
   const redDays = parseFloat(document.getElementById("redDays").value) || 0;
   const brusPct = parseFloat(document.getElementById("brusPct").value) || 0;
   const tech = document.getElementById("techDebtPerson").value;
+
+  if (sprintStart && sprintEnd && new Date(sprintStart) > new Date(sprintEnd)) {
+    document.getElementById("output").innerHTML = "<strong>Startdatum kan inte vara efter slutdatum.</strong>";
+    return;
+  }
 
   const dayH = 7.25;
   const gross = 72.5;
   const ceremonies = 11; // refinement + planning + retro + standups + CTO 1:1
   const techDebtH = 7.25; // ungefär en dag
 
-  let html = "<h2>Kapacitet per person</h2><table><thead><tr><th>Person</th><th>Brutto h</th><th>Bortfall h</th><th>Kvar h</th><th>Kvar SP</th></tr></thead><tbody>";
+  let html = "";
+  if (sprintName || sprintDate || sprintGoal) {
+    html += "<h2>Sammanfattning</h2><div class='card' style='padding:12px; margin-bottom:12px;'>";
+    if (sprintName) html += `<div><strong>Sprint:</strong> ${sprintName}</div>`;
+    if (sprintDate) html += `<div><strong>Datum:</strong> ${sprintDate}</div>`;
+    if (sprintGoal) html += `<div><strong>Mål:</strong> ${sprintGoal}</div>`;
+    if (sprintStart && sprintEnd) {
+      const startDate = new Date(sprintStart);
+      const endDate = new Date(sprintEnd);
+      const days = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      html += `<div><strong>Antal kalenderdagar:</strong> ${days}</div>`;
+    }
+    html += "</div>";
+  }
+
+  html += "<h2>Kapacitet per person</h2><table><thead><tr><th>Person</th><th>Brutto h</th><th>Bortfall h</th><th>Kvar h</th><th>Kvar SP</th></tr></thead><tbody>";
 
   let totalGross = 0, totalLoss = 0, totalLeft = 0;
 
@@ -179,6 +209,7 @@ function calculate() {
   });
 
   html += `</tbody><tfoot><tr><td>Totalt</td><td>${totalGross.toFixed(1)}</td><td>${totalLoss.toFixed(1)}</td><td>${totalLeft.toFixed(1)}</td><td>${(totalLeft/dayH).toFixed(2)}</td></tr></tfoot></table>`;
+  html += `<p class="expl">Beräkningen inkluderar ${redDays} arbetsfria dagar och ${brusPct}% standard-brus. ${tech} gör tech-debt den här sprinten.</p>`;
 
   document.getElementById("output").innerHTML = html;
 }
