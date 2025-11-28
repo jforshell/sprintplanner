@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<title>Sprintkapacitetsräknare – per person</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px; background:#fafafa; color:#222; }
+  h1 { margin-bottom: 6px; }
+  p { margin-top:0; color:#555; max-width:800px; }
+  .card { background:#fff; border:1px solid #ddd; border-radius:8px; padding:20px; margin-bottom:20px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
+  th, td { padding:6px 8px; border-bottom:1px solid #eee; text-align:right; }
+  th:first-child, td:first-child { text-align:left; }
+  th { background:#f3f3f3; }
+  tfoot td { font-weight:600; background:#fafafa; }
+  input[type=number], select { width:100%; padding:6px; border:1px solid #ccc; border-radius:6px; font-size:14px; }
+  .btn { padding:10px 14px; border-radius:6px; cursor:pointer; background:#2fa06a; border:none; color:#fff; font-weight:600; margin-top:10px; }
+  .expl { font-size:12px; color:#666; margin-bottom:10px; }
+  .summary { font-size:14px; line-height:1.5; margin-top:16px; }
+</style>
+</head>
+<style>
+  .container { display:flex; flex-wrap:nowrap; gap:24px; }
+  .form-section { flex:0 0 460px; }
+  .summary-section { flex:1; background:#fff; padding:20px; border-radius:8px; border:1px solid #ddd; height:fit-content; position:sticky; top:20px; }
+</style>
+<body>
+<div class="container">
+  <div class="form-section">
+<h1>Sprintkapacitetsräknare (per person)</h1>
+<p>Ett verktyg för att räkna ut realistisk kapacitet per sprint baserat på forskning om fokus, kontextbyten och planerat bortfall.</p>
+
+<div class="card">
+  <h2>Sprintinformation</h2>
+
+  <label>Sprintnamn</label>
+  <input id="sprintName" type="text" placeholder="t.ex. TC Sprint 12">
+  <br><br>
+
+  <label>Sprintdatum</label>
+  <input id="sprintDate" type="text" placeholder="t.ex. 24 nov – 5 dec">
+  <br><br>
+
+  <label>Sprintmål</label>
+  <textarea id="sprintGoal" rows="3" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:6px; font-size:14px;" placeholder="Beskriv sprintens mål..."></textarea>
+  <br><br>
+
+  <label>Sprint startdatum</label>
+  <input id="sprintStart" type="date">
+
+  <label>Sprint slutdatum</label>
+  <input id="sprintEnd" type="date">
+  <br><br>
+
+  <label>Arbetsfria dagar inom sprinten</label>
+  <input id="redDays" type="number" min="0" value="0"> inom sprinten</label>
+  <input id="redDays" type="number" min="0" value="0">
+</div>
+
+<div class="card">
+  <h2>Gemensamma sprintinställningar</h2></h2></h2>
+
+  <label>Standard-brus (%)</label>
+  <input id="brusPct" type="number" min="0" max="50" value="20">
+  <div class="expl">Brus = fokusförlust, kontextbyten, kommunikation och övrigt oförutsägbart.</div>
+
+  <label>Vem gör tech-debt denna sprint?</label>
+  <select id="techDebtPerson">
+    <option>Carina</option>
+    <option>Olle</option>
+    <option>Torbjörn</option>
+    <option>Daniel</option>
+    <option>Felix</option>
+    <option>Boris</option>
+  </select>
+  <div class="expl">Den som gör tech-debt tappar ca 7.25 timmar denna sprint.</div>
+</div>
+</div>
+
+<div class="card">
+  <h2>Frånvaro & övrigt bortfall per person</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Person</th>
+        <th>Frånvaro (dagar)</th>
+        <th>Övrigt (dagar)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Carina</td><td><input id="abs_Carina" type="number" step="0.5" value="0"></td><td><input id="oth_Carina" type="number" step="0.5" value="0"></td></tr>
+      <tr><td>Olle</td><td><input id="abs_Olle" type="number" step="0.5" value="0"></td><td><input id="oth_Olle" type="number" step="0.5" value="0"></td></tr>
+      <tr><td>Torbjörn</td><td><input id="abs_Torbjorn" type="number" step="0.5" value="0"></td><td><input id="oth_Torbjorn" type="number" step="0.5" value="0"></td></tr>
+      <tr><td>Daniel</td><td><input id="abs_Daniel" type="number" step="0.5" value="0"></td><td><input id="oth_Daniel" type="number" step="0.5" value="0"></td></tr>
+      <tr><td>Felix</td><td><input id="abs_Felix" type="number" step="0.5" value="0"></td><td><input id="oth_Felix" type="number" step="0.5" value="0"></td></tr>
+      <tr><td>Boris</td><td><input id="abs_Boris" type="number" step="0.5" value="0"></td><td><input id="oth_Boris" type="number" step="0.5" value="0"></td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+  <div class="summary-section">
+    <button class="btn" onclick="calculate()">Beräkna kapacitet</button>
+
+<div id="output" class="summary" style="margin-top:20px;"></div>
+
+<script>
+// Svenska helgdagar 2025–2026 (YYYY-MM-DD)
+const holidays = [
+  // 2025 arbetsfria dagar
+  "2025-06-20", // Midsommarafton
+  "2025-12-24", // Julafton
+  "2025-12-25", // Juldagen
+  "2025-12-26", // Annandag jul
+  "2025-12-31", // Nyårsafton
+  "2026-01-01", // Nyårsdagen
+
+  // 2026 arbetsfria dagar
+  "2026-06-19", // Midsommarafton
+  "2026-12-24", // Julafton
+  "2026-12-25", // Juldagen
+  "2026-12-26", // Annandag jul
+  "2026-12-31", // Nyårsafton
+];
+
+function calcRedDays() {
+  const start = document.getElementById("sprintStart").value;
+  const end = document.getElementById("sprintEnd").value;
+  if (!start || !end) {
+    document.getElementById("redDays").value = 0;
+    return;
+  }
+  const s = new Date(start);
+  const e = new Date(end);
+  let count = 0;
+  holidays.forEach(h => {
+    const d = new Date(h);
+    if (d >= s && d <= e) count++;
+  });
+  document.getElementById("redDays").value = count;
+}
+
+function calculate() {
+  const people = ["Carina","Olle","Torbjörn","Daniel","Felix","Boris"];
+  const redDays = parseFloat(document.getElementById("redDays").value) || 0;
+  const brusPct = parseFloat(document.getElementById("brusPct").value) || 0;
+  const tech = document.getElementById("techDebtPerson").value;
+
+  const dayH = 7.25;
+  const gross = 72.5;
+  const ceremonies = 11; // refinement + planning + retro + standups + CTO 1:1
+  const techDebtH = 7.25; // ungefär en dag
+
+  let html = "<h2>Kapacitet per person</h2><table><thead><tr><th>Person</th><th>Brutto h</th><th>Bortfall h</th><th>Kvar h</th><th>Kvar SP</th></tr></thead><tbody>";
+
+  let totalGross = 0, totalLoss = 0, totalLeft = 0;
+
+  people.forEach(p => {
+    const idBase = p.replace("ö","o").replace("Ö","O").replace("ä","a").replace("Ä","A").replace("å","a").replace("Å","A");
+    const absDays = parseFloat(document.getElementById("abs_"+idBase).value) || 0;
+    const othDays = parseFloat(document.getElementById("oth_"+idBase).value) || 0;
+
+    const abs = absDays * dayH;
+    const oth = othDays * dayH;
+    const redLoss = redDays * dayH;
+    const cer = ceremonies;
+    const techLoss = (p === tech) ? techDebtH : 0;
+
+    const sumLoss = abs + oth + redLoss + cer + techLoss;
+    const withBrus = sumLoss + ((gross - sumLoss) * (brusPct/100));
+    const left = gross - withBrus;
+
+    totalGross += gross;
+    totalLoss += withBrus;
+    totalLeft += left;
+
+    html += `<tr><td>${p}</td><td>${gross.toFixed(1)}</td><td>${withBrus.toFixed(1)}</td><td>${left.toFixed(1)}</td><td>${(left/dayH).toFixed(2)}</td></tr>`;
+  });
+
+  html += `</tbody><tfoot><tr><td>Totalt</td><td>${totalGross.toFixed(1)}</td><td>${totalLoss.toFixed(1)}</td><td>${totalLeft.toFixed(1)}</td><td>${(totalLeft/dayH).toFixed(2)}</td></tr></tfoot></table>`;
+
+  document.getElementById("output").innerHTML = html;
+}
+
+// Auto-fill sprintDate when both dates selected
+function updateSprintDisplay() {
+  const s = document.getElementById("sprintStart").value;
+  const e = document.getElementById("sprintEnd").value;
+  if (s && e) {
+    const startDate = new Date(s);
+    const endDate = new Date(e);
+    const opts = { day: 'numeric', month: 'short' };
+    const startStr = startDate.toLocaleDateString('sv-SE', opts).replace('.', '');
+    const endStr = endDate.toLocaleDateString('sv-SE', opts).replace('.', '');
+    document.getElementById("sprintDate").value = `${startStr} – ${endStr}`;
+  }
+}
+
+document.getElementById("sprintStart").addEventListener("change", () => { calcRedDays(); updateSprintDisplay(); });
+document.getElementById("sprintEnd").addEventListener("change", () => { calcRedDays(); updateSprintDisplay(); });
+</script>
+  </div>
+</div>
+</body>
+</html>
