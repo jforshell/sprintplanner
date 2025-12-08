@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive - Automation MVP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .header {
+            background-color: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 400;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-secondary {
+            background-color: #8b9a8e;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7a8980;
+        }
+
+        .btn-danger {
+            background-color: #fff;
+            color: #d32f2f;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-danger:hover {
+            background-color: #fafafa;
+        }
+
+        .content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .activity-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .status-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .preview-link {
+            color: #1976d2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .preview-link:hover {
+            text-decoration: underline;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 32px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        .tab.active {
+            color: #2d5016;
+            border-bottom-color: #2d5016;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section {
+            background: white;
+            padding: 32px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2d5016;
+        }
+
+        .radio-option label {
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .delay-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .delay-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .delay-input-group label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .delay-input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .summary-box {
+            background-color: #f5f5f5;
+            padding: 16px;
+            border-radius: 4px;
+            border-left: 3px solid #2d5016;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            background-color: #2d5016;
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        .btn-primary:hover {
+            background-color: #243f12;
+        }
+
+        .btn-primary:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 32px 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <button class="back-btn">‹ Tillbaka</button>
+            <h1 class="header-title">Redigera landningssida</h1>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-secondary">Spara</button>
+            <button class="btn btn-danger">Avbryt</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Kund</span>
+                <div class="info-value">Acme Retail AB - 248791</div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Kundenhet</span>
+                <div class="info-value">Acme AB - Stockholm - 375629</div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Kampanj</span>
+                <div class="info-value">87264 - Julkampanj Presentkort 15</div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">KSID</span>
+                <div class="info-value">94716382</div>
+            </div>
+        </div>
+
+        <div class="activity-info">
+            <div class="info-item">
+                <span class="info-label">Aktivitetsnamn</span>
+                <div class="info-value">Julkampanj 15kr Rabatt</div>
+            </div>
+            <div class="status-section">
+                <div class="info-item" style="flex: 1;">
+                    <span class="info-label">Status</span>
+                    <div class="info-value"><span class="status-badge">Aktiv</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="activity-info">
+            <div class="info-item">
+                <span class="info-label">Giltig från</span>
+                <div class="info-value">11/28/2025</div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Giltig till</span>
+                <div class="info-value">12/31/2025</div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <div class="preview-links">
+                <a href="#" class="preview-link">Landningssida preview</a>
+                <a href="#" class="preview-link">Kupongmall preview</a>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab" onclick="switchTab('kuponger')">Kuponger</button>
+            <button class="tab" onclick="switchTab('url')">URL</button>
+            <button class="tab" onclick="switchTab('copy')">Copy</button>
+            <button class="tab" onclick="switchTab('design')">Design</button>
+            <button class="tab active" onclick="switchTab('automation')">Automation</button>
+            <button class="tab" onclick="switchTab('historik')">Historik</button>
+            <button class="tab" onclick="switchTab('statistik')">Statistik</button>
+        </div>
+
+        <div class="tab-content" id="kuponger">
+            <div class="form-section">
+                <p style="color: #666;">Kuponger-fliken innehåll...</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="url">
+            <div class="form-section">
+                <p style="color: #666;">URL-fliken innehåll...</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="copy">
+            <div class="form-section">
+                <p style="color: #666;">Copy-fliken innehåll...</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="design">
+            <div class="form-section">
+                <p style="color: #666;">Design-fliken innehåll...</p>
+            </div>
+        </div>
+
+        <div class="tab-content active" id="automation">
+            <div class="form-section">
+                <h2 style="font-size: 18px; margin-bottom: 16px; font-weight: 500;">Automatiskt utskick vid inlösen</h2>
+
+                <!-- Active State - shown when automation is activated -->
+                <div id="automation-active" class="hidden">
+                    <div style="padding: 20px; background-color: #e8f5e9; border-radius: 4px; border-left: 3px solid #4caf50;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="font-size: 16px; font-weight: 500; color: #2d5016; margin: 0;">✓ Automation är aktiverad</h3>
+                            <button class="btn-primary" style="background-color: #d32f2f; margin: 0;" onclick="deactivateAutomation()">
+                                Inaktivera automation
+                            </button>
+                        </div>
+
+                        <div style="border-top: 1px solid #c8e6c9; padding-top: 20px;">
+                            <p style="margin-bottom: 8px; color: #333;"><strong>Uppföljningskampanj:</strong> <span id="active-campaign">-</span></p>
+                            <p style="margin-bottom: 8px; color: #333;"><strong>KSID:</strong> <span id="active-ksid">-</span></p>
+                            <p style="margin-bottom: 16px; color: #333;"><strong>Fördröjning:</strong> <span id="active-delay">-</span></p>
+                            <p style="margin: 0; color: #555; line-height: 1.6; font-size: 13px;">
+                                När en konsument löser in kupongen skickas uppföljningskampanjen automatiskt efter angiven fördröjning. Utskick sker aldrig mellan 21:00–08:00 eller på helger (lördag/söndag). Utskick som hamnar på dessa tider skjuts till nästa vardag kl 08:00.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Form -->
+                <div id="automation-config-wrapper">
+                    <div style="background-color: #f9f9f9; padding: 16px; border-radius: 4px; margin-bottom: 20px; border-left: 3px solid #2d5016;">
+                        <p style="margin-bottom: 12px; line-height: 1.6; color: #555;">
+                            <strong>Hur det fungerar:</strong> När en konsument löser in en kupong från denna kampanj kan systemet automatiskt skicka ut en uppföljningskampanj efter en vald fördröjning.
+                        </p>
+                        <p style="line-height: 1.6; color: #555;">
+                            Systemet kontrollerar automatiskt att mottagaren har aktivt samtycke innan utskick sker.
+                        </p>
+                    </div>
+
+                    <div class="form-group" id="radio-group">
+                        <label class="form-label">Aktivera automatiskt utskick vid inlösen</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="enable-yes" name="enable-automation" value="yes" onchange="toggleAutomation()">
+                                <label for="enable-yes">Ja</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="enable-no" name="enable-automation" value="no" checked onchange="toggleAutomation()">
+                                <label for="enable-no">Nej</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="automation-config" class="hidden">
+                        <div class="divider"></div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="followup-campaign">Uppföljningskampanj</label>
+                            <select class="form-select" id="followup-campaign" onchange="updateKsidOptions(); updateSummary()">
+                                <option value="">Välj kampanj...</option>
+                                <option value="87301">87301 - Julkampanj Uppföljning</option>
+                                <option value="87302">87302 - Nyårserbjudande 2026</option>
+                                <option value="87303">87303 - Tack för ditt köp</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="ksid-group" style="display: none;">
+                            <label class="form-label" for="followup-ksid">KSID</label>
+                            <select class="form-select" id="followup-ksid" onchange="updateSummary()">
+                                <option value="">Välj KSID...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Fördröjning innan utskick</label>
+                            <div class="delay-inputs">
+                                <div class="delay-input-group">
+                                    <label for="delay-days">Fördröjning (dagar)</label>
+                                    <input type="number" id="delay-days" min="0" max="365" value="0" onchange="updateSummary()">
+                                </div>
+                                <div class="delay-input-group">
+                                    <label for="delay-hours">Fördröjning (timmar)</label>
+                                    <input type="number" id="delay-hours" min="0" max="23" value="0" onchange="updateSummary()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="summary-box" id="automation-summary">
+                                När en konsument löser in kupongen i denna kampanj skickas uppföljningskampanjen automatiskt efter <strong>0 dagar och 0 timmar</strong>. Utskick sker aldrig mellan 21:00–08:00 eller på helger (lördag/söndag). Utskick som hamnar på dessa tider skjuts till nästa vardag kl 08:00.
+                            </div>
+                        </div>
+
+                        <button class="btn-primary" id="activate-btn" onclick="activateAutomation()">
+                            Aktivera automation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="historik">
+            <div class="form-section">
+                <p style="color: #666;">Historik-fliken innehåll...</p>
+            </div>
+        </div>
+
+        <div class="tab-content" id="statistik">
+            <div class="form-section">
+                <p style="color: #666;">Statistik-fliken innehåll...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Disable scroll on number inputs to prevent accidental changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(input => {
+                input.addEventListener('wheel', function(e) {
+                    e.preventDefault();
+                });
+            });
+        });
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function toggleAutomation() {
+            const enableYes = document.getElementById('enable-yes');
+            const automationConfig = document.getElementById('automation-config');
+            const activateBtn = document.getElementById('activate-btn');
+
+            if (enableYes.checked) {
+                automationConfig.classList.remove('hidden');
+                // Set initial button state to disabled until campaign and KSID are selected
+                activateBtn.disabled = true;
+                updateSummary();
+            } else {
+                automationConfig.classList.add('hidden');
+            }
+        }
+
+        function updateKsidOptions() {
+            const campaign = document.getElementById('followup-campaign');
+            const ksidGroup = document.getElementById('ksid-group');
+            const ksidSelect = document.getElementById('followup-ksid');
+
+            if (campaign.value) {
+                // Show KSID dropdown
+                ksidGroup.style.display = 'block';
+
+                // Populate with dummy KSIDs based on selected campaign
+                const ksidOptions = {
+                    '87301': [
+                        { value: '94716383', text: '94716383' },
+                        { value: '94716384', text: '94716384' },
+                        { value: '94716385', text: '94716385' }
+                    ],
+                    '87302': [
+                        { value: '94716386', text: '94716386' },
+                        { value: '94716387', text: '94716387' }
+                    ],
+                    '87303': [
+                        { value: '94716388', text: '94716388' },
+                        { value: '94716389', text: '94716389' },
+                        { value: '94716390', text: '94716390' }
+                    ]
+                };
+
+                // Clear existing options
+                ksidSelect.innerHTML = '<option value="">Välj KSID...</option>';
+
+                // Add new options
+                const options = ksidOptions[campaign.value] || [];
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.text;
+                    ksidSelect.appendChild(option);
+                });
+            } else {
+                // Hide KSID dropdown
+                ksidGroup.style.display = 'none';
+                ksidSelect.innerHTML = '<option value="">Välj KSID...</option>';
+            }
+        }
+
+        function updateSummary() {
+            const campaign = document.getElementById('followup-campaign');
+            const ksid = document.getElementById('followup-ksid');
+            const days = parseInt(document.getElementById('delay-days').value) || 0;
+            const hours = parseInt(document.getElementById('delay-hours').value) || 0;
+            const activateBtn = document.getElementById('activate-btn');
+            const summary = document.getElementById('automation-summary');
+
+            // Enable button only if campaign and KSID are selected
+            if (campaign.value && ksid.value) {
+                activateBtn.disabled = false;
+                activateBtn.style.opacity = '1';
+                activateBtn.style.cursor = 'pointer';
+            } else {
+                activateBtn.disabled = true;
+                activateBtn.style.opacity = '0.5';
+                activateBtn.style.cursor = 'not-allowed';
+            }
+
+            // Update summary text
+            let summaryText = `När en konsument löser in kupongen i denna kampanj skickas uppföljningskampanjen automatiskt efter <strong>${days} ${days === 1 ? 'dag' : 'dagar'} och ${hours} ${hours === 1 ? 'timme' : 'timmar'}</strong>. Utskick sker aldrig mellan 21:00–08:00 eller på helger (lördag/söndag). Utskick som hamnar på dessa tider skjuts till nästa vardag kl 08:00.`;
+
+            summary.innerHTML = summaryText;
+        }
+
+        function activateAutomation() {
+            const campaign = document.getElementById('followup-campaign');
+            const ksid = document.getElementById('followup-ksid');
+            const days = document.getElementById('delay-days').value;
+            const hours = document.getElementById('delay-hours').value;
+
+            // Validate
+            if (!campaign.value) {
+                alert('Vänligen välj en uppföljningskampanj först.');
+                return;
+            }
+            if (!ksid.value) {
+                alert('Vänligen välj ett KSID först.');
+                return;
+            }
+
+            // Confirmation
+            const campaignText = campaign.options[campaign.selectedIndex].text;
+            const ksidText = ksid.options[ksid.selectedIndex].text;
+            const confirmMsg = `Är du säker på att du vill aktivera automation?\n\nUppföljningskampanj: ${campaignText}\nKSID: ${ksidText}\nFördröjning: ${days} ${days === '1' ? 'dag' : 'dagar'} och ${hours} ${hours === '1' ? 'timme' : 'timmar'}\n\nDetta kommer automatiskt skicka ut uppföljningskampanjen när en konsument löser in en kupong.`;
+
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            // Update active state display
+            document.getElementById('active-campaign').textContent = campaignText;
+            document.getElementById('active-ksid').textContent = ksidText;
+            document.getElementById('active-delay').textContent = `${days} ${days === '1' ? 'dag' : 'dagar'} och ${hours} ${hours === '1' ? 'timme' : 'timmar'}`;
+
+            // Hide config, show active state
+            document.getElementById('automation-config-wrapper').classList.add('hidden');
+            document.getElementById('automation-active').classList.remove('hidden');
+
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #4caf50; color: white; padding: 16px 24px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000;';
+            successMsg.textContent = 'Automation aktiverad!';
+            document.body.appendChild(successMsg);
+            setTimeout(() => successMsg.remove(), 3000);
+        }
+
+        function deactivateAutomation() {
+            const confirmMsg = 'Är du säker på att du vill inaktivera automation?\n\n⚠️ All konfiguration kommer att raderas och du måste konfigurera om automationen om du vill aktivera den igen.';
+
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            // Reset all fields
+            document.getElementById('followup-campaign').value = '';
+            document.getElementById('followup-ksid').value = '';
+            document.getElementById('delay-days').value = '0';
+            document.getElementById('delay-hours').value = '0';
+            document.getElementById('ksid-group').style.display = 'none';
+
+            // Hide active state, show config with "Nej" selected
+            document.getElementById('automation-active').classList.add('hidden');
+            document.getElementById('automation-config-wrapper').classList.remove('hidden');
+
+            document.getElementById('enable-no').checked = true;
+            document.getElementById('enable-yes').checked = false;
+            document.getElementById('automation-config').classList.add('hidden');
+
+            // Show info message
+            const infoMsg = document.createElement('div');
+            infoMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ff9800; color: white; padding: 16px 24px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 1000;';
+            infoMsg.textContent = 'Automation inaktiverad - all konfiguration raderad';
+            document.body.appendChild(infoMsg);
+            setTimeout(() => infoMsg.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
