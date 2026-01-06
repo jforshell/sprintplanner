@@ -6,139 +6,218 @@
   <title>SMS Marknadsföringssamtycke</title>
   <style>
     :root {
-      --accent: #c0392b;
-      --accent-soft: #fdf4f2;
-      --text: #2c3e50;
-      --muted: #6c7a89;
-      --success: #27ae60;
-      --success-hover: #229954;
-      --warning-bg: #fff7e6;
-      --warning-border: #ffc107;
+      --brand: #5aa800;
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.75);
+      --panel: rgba(40, 45, 42, 0.58);
+      --panel-border: rgba(255,255,255,0.22);
+      --box: rgba(0,0,0,0.16);
+      --box-border: rgba(255,255,255,0.22);
+      --input-border: rgba(255,255,255,0.45);
+      --danger: rgba(255, 214, 153, 0.92);
+      --danger-border: rgba(255, 193, 7, 0.95);
+      --cta-bg: rgba(0,0,0,0.35);
+      --cta-border: rgba(255,255,255,0.65);
+      --shadow: 0 18px 60px rgba(0,0,0,0.35);
+      --bg-url: url("https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=60");
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #fafafa;
-      padding: 16px;
+      min-height: 100vh;
+      background: #0f1412;
+      padding: 18px 16px;
       line-height: 1.55;
       color: var(--text);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -30px;
+      background-image: var(--bg-url);
+      background-size: cover;
+      background-position: center;
+      filter: blur(12px);
+      transform: scale(1.05);
+      opacity: 0.9;
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(80% 70% at 30% 10%, rgba(255,255,255,0.18), transparent 65%),
+        linear-gradient(180deg, rgba(10, 14, 12, 0.35), rgba(10, 14, 12, 0.66));
+      z-index: -1;
     }
 
     .container {
-      max-width: 500px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 18px 18px 20px;
-      border-radius: 10px;
-      border: 1px solid #ececec;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      width: min(520px, calc(100vw - 32px));
+      border-radius: 14px;
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 24px 22px 22px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .brand-header {
       text-align: center;
-      margin-bottom: 16px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid #f1f1f1;
+      margin-bottom: 18px;
     }
 
-    .brand-mark {
-      height: 72px;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 6px;
-    }
-
-    .brand-logo {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--accent);
+    .logo {
+      font-size: 64px;
+      font-weight: 300;
       letter-spacing: 0.4px;
+      color: var(--brand);
+      line-height: 1;
+      margin-top: 6px;
     }
 
-    .campaign-title {
-      font-size: 14px;
+    .logo .power {
+      display: inline-block;
+      width: 0.95em;
+      height: 0.95em;
+      vertical-align: -0.12em;
+      margin: 0 -0.12em 0 -0.12em;
+    }
+
+    .portal {
+      margin-top: 6px;
+      font-size: 26px;
+      font-weight: 300;
+      color: rgba(0,0,0,0.35);
+      text-shadow: 0 1px 0 rgba(255,255,255,0.15);
+      mix-blend-mode: soft-light;
+    }
+
+    .title {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 28px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.95);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.88);
+    }
+
+    .desc {
+      text-align: center;
+      margin: 10px auto 0;
+      max-width: 38ch;
       color: var(--muted);
-      margin-top: 4px;
+      font-size: 14px;
     }
 
-    label {
+    form {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .field label {
       display: block;
       font-weight: 600;
       margin-bottom: 6px;
-      color: var(--text);
-      font-size: 14px;
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
     }
 
     input[type="tel"] {
       width: 100%;
       padding: 10px 12px;
-      border: 1.5px solid #ddd;
+      border: 1px solid var(--input-border);
       border-radius: 6px;
       font-size: 15px;
-      transition: border-color 0.25s, box-shadow 0.25s;
+      background: rgba(255,255,255,0.92);
+      color: rgba(0,0,0,0.75);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
     }
 
     input[type="tel"]:focus {
       outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+      border-color: rgba(255,255,255,0.85);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.16);
     }
 
-    fieldset {
-      border: 1px solid #ededed;
-      border-radius: 8px;
-      padding: 14px;
-      margin: 12px 0;
+    .check {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: rgba(255,255,255,0.9);
+      font-size: 14px;
     }
 
-    legend {
+    .check input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+    }
+
+    a {
+      color: rgba(255,255,255,0.92);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    a:hover { color: rgba(255,255,255,1); }
+
+    .box {
+      border: 1px solid var(--box-border);
+      background: var(--box);
+      border-radius: 6px;
+      padding: 14px 14px 12px;
+    }
+
+    .box-title {
       font-weight: 700;
       font-size: 16px;
-      padding: 0 6px;
-      color: var(--text);
-    }
-
-    .legend-sub {
-      margin: 6px 0 10px;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 400;
+      color: rgba(255,255,255,0.95);
     }
 
     .radio-group {
+      margin-top: 10px;
       display: grid;
       gap: 10px;
-      margin-top: 8px;
     }
 
     .radio-option {
-      border: 1px solid #e5e5e5;
-      border-radius: 8px;
-      padding: 10px;
-      cursor: pointer;
-      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
-      position: relative;
       display: grid;
-      grid-template-columns: 18px 1fr;
+      grid-template-columns: 22px 1fr;
       gap: 10px;
       align-items: start;
-    }
-
-    .radio-option:hover {
-      border-color: var(--accent);
-      box-shadow: 0 4px 12px rgba(192, 57, 43, 0.08);
-    }
-
-    .radio-option:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
-    }
-
-    .radio-option[data-selected="true"] {
-      border-color: var(--accent);
-      background: var(--accent-soft);
+      cursor: pointer;
+      position: relative;
     }
 
     .radio-option input[type="radio"] {
@@ -147,71 +226,66 @@
       pointer-events: none;
     }
 
-    .radio-custom {
-      width: 18px;
-      height: 18px;
-      border: 2px solid #bdc3c7;
-      border-radius: 50%;
-      margin-top: 1px;
+    .radio-ui {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,0.85);
+      margin-top: 2px;
       position: relative;
-      transition: border-color 0.25s, box-shadow 0.25s;
-      background: #fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
     }
 
-    .radio-option[data-selected="true"] .radio-custom {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.16);
+    .radio-option input[type="radio"]:focus-visible + .radio-ui {
+      outline: 3px solid rgba(255,255,255,0.28);
+      outline-offset: 2px;
     }
 
-    .radio-option[data-selected="true"] .radio-custom::after {
+    .radio-option input[type="radio"]:checked + .radio-ui::after {
       content: "";
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 9px;
-      height: 9px;
-      background: var(--accent);
-      border-radius: 50%;
+      inset: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.12);
     }
 
-    .radio-title {
+    .radio-head {
+      display: block;
       font-weight: 700;
-      color: var(--text);
-      margin-bottom: 2px;
-      font-size: 14px;
+      color: rgba(255,255,255,0.92);
     }
 
-    .radio-description {
+    .radio-sub {
+      display: block;
+      margin-top: 2px;
+      color: rgba(255,255,255,0.72);
       font-size: 13px;
-      color: var(--muted);
+    }
+
+    .fineprint {
+      margin-top: 10px;
+      color: rgba(255,255,255,0.78);
+      font-size: 13px;
       line-height: 1.45;
     }
 
-    .consent-footer {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-      margin-top: 10px;
+    .policy-link {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 13px;
     }
-
-    .consent-footer a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .consent-footer a:hover { text-decoration: underline; }
 
     .error-message {
-      background: var(--warning-bg);
-      border-left: 4px solid var(--warning-border);
+      background: rgba(60, 40, 10, 0.55);
+      border-left: 4px solid var(--danger-border);
       padding: 10px 12px;
-      margin: 12px 0;
+      margin: 0;
       border-radius: 6px;
       display: none;
       gap: 8px;
       font-size: 13px;
-      color: #8a6d3b;
+      color: var(--danger);
       align-items: center;
     }
 
@@ -219,30 +293,31 @@
     .error-message .icon { font-size: 16px; }
 
     .cta-button {
-      width: 100%;
-      padding: 12px;
-      background: var(--success);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      justify-self: center;
+      min-width: 210px;
+      padding: 10px 14px;
+      background: var(--cta-bg);
+      color: rgba(255,255,255,0.92);
+      border: 1px solid var(--cta-border);
+      border-radius: 2px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
     }
 
-    .cta-button:hover { background: var(--success-hover); transform: translateY(-1px); }
+    .cta-button:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.42); }
     .cta-button:active { transform: translateY(0); }
 
     .success-message {
-      background: #e9f7ef;
-      border: 1px solid #28a745;
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.3);
       padding: 16px;
-      border-radius: 8px;
+      border-radius: 10px;
       text-align: center;
       display: none;
       font-size: 14px;
-      color: #155724;
+      color: rgba(255,255,255,0.92);
       margin-top: 10px;
     }
 
@@ -250,29 +325,40 @@
     .success-message .icon { font-size: 36px; margin-bottom: 8px; display: block; }
     .success-message h3 { margin-bottom: 6px; }
 
-    @media (max-width: 480px) {
-      body { padding: 12px; }
-      .container { padding: 16px; }
-      .brand-mark { height: 62px; }
+    @media (max-width: 520px) {
+      .container { padding: 20px 16px 18px; }
+      .logo { font-size: 56px; }
+      .portal { font-size: 22px; }
+      .title { font-size: 26px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="brand-header">
-      <img class="brand-mark" src="https://i.imgur.com/jWkl4lC.png" alt="Skogaholm logotyp">
-      <div class="brand-logo">Skogaholm</div>
-      <div class="campaign-title">Julkampanj 2025</div>
+      <div class="logo" aria-label="ClearOn Kundportal">
+        Clear
+        <svg class="power" viewBox="0 0 64 64" aria-hidden="true">
+          <path fill="currentColor" d="M30.6 6.5a2.8 2.8 0 0 1 5.6 0v22.2a2.8 2.8 0 0 1-5.6 0V6.5z"/>
+          <path fill="currentColor" d="M32 14.2a21.8 21.8 0 1 0 21.8 21.8 2.8 2.8 0 0 1 5.6 0A27.4 27.4 0 1 1 4.6 36a2.8 2.8 0 0 1 5.6 0A21.8 21.8 0 0 0 32 57.8z"/>
+        </svg>
+        n
+      </div>
+      <div class="portal">Kundportal</div>
     </div>
 
+    <div class="title">Titel nr 2</div>
+    <div class="subtitle">Nu är vi igång!</div>
+    <p class="desc">Det är de små detaljerna som gör det...</p>
+
     <form id="consentForm" novalidate>
-      <div>
-        <label for="phone">Mobilnummer</label>
+      <div class="field">
+        <label for="phone" class="sr-only">Mobilnummer</label>
         <input
           type="tel"
           id="phone"
           name="phone"
-          placeholder="070-123 45 67"
+          placeholder="Mobilnummer 0701234567"
           pattern="[0-9+\\-\\s]+"
           autocomplete="tel"
           inputmode="tel"
@@ -286,42 +372,47 @@
         <span>Vänligen ange ditt mobilnummer.</span>
       </div>
 
-      <fieldset>
-        <legend>Vill du få fler erbjudanden?</legend>
-        <div class="legend-sub">Få exklusiva rabatter och erbjudanden direkt till din mobil.</div>
+      <label class="check" for="terms">
+        <input id="terms" name="terms" type="checkbox" aria-describedby="termsError">
+        <span>Jag godkänner <a href="#" target="_blank" rel="noopener noreferrer">villkor</a> samt <a href="#" target="_blank" rel="noopener noreferrer">ClearOns villkor</a></span>
+      </label>
 
+      <div class="error-message" id="termsError" role="alert" aria-live="polite">
+        <span class="icon">!</span>
+        <span>Du behöver godkänna villkoren för att fortsätta.</span>
+      </div>
+
+      <div class="box">
+        <div class="box-title">Vill du få SMS-erbjudande från oss?</div>
         <div class="radio-group" role="radiogroup" aria-label="SMS-samtycke">
           <label class="radio-option" data-value="yes" data-selected="false">
-            <input type="radio" name="consent" value="yes" required>
-            <span class="radio-custom" aria-hidden="true"></span>
+            <input type="radio" name="consent" value="yes">
+            <span class="radio-ui" aria-hidden="true"></span>
             <span>
-              <span class="radio-title">Ja, skicka mig erbjudanden via SMS</span>
-              <span class="radio-description">Få unika kampanjer och rabattkuponger anpassade för dig.</span>
+              <span class="radio-head">Ja, jag vill ta emot marknadsföring via SMS</span>
+              <span class="radio-sub">Få unika erbjudanden direkt i mobilen!</span>
             </span>
           </label>
 
           <label class="radio-option" data-value="no" data-selected="false">
-            <input type="radio" name="consent" value="no" required>
-            <span class="radio-custom" aria-hidden="true"></span>
+            <input type="radio" name="consent" value="no">
+            <span class="radio-ui" aria-hidden="true"></span>
             <span>
-              <span class="radio-title">Nej tack, jag vill bara ha denna kupong</span>
-              <span class="radio-description">Du kommer inte att få några marknadsförings-SMS från oss.</span>
+              <span class="radio-head">Nej, jag vill inte ta emot marknadsföring</span>
             </span>
           </label>
         </div>
 
-        <div class="consent-footer">
-          Du kan när som helst avregistrera dig via länk i SMS:et.
-          Läs mer i vår <a href="#" target="_blank" rel="noopener noreferrer">integritetspolicy</a>.
-        </div>
-      </fieldset>
+        <div class="fineprint">Du kan när som helst avregistrera dig via länken i SMS:et.</div>
+        <a class="policy-link" href="#" target="_blank" rel="noopener noreferrer">Läs vår integritetspolicy (PDF)</a>
+      </div>
 
       <div class="error-message" id="consentError" role="alert" aria-live="polite">
         <span class="icon">!</span>
         <span>Vänligen välj ett alternativ för att fortsätta.</span>
       </div>
 
-      <button type="submit" class="cta-button">Hämta kupong</button>
+      <button type="submit" class="cta-button">I wants it, I needs it.</button>
     </form>
 
     <div class="success-message" id="successMessage" tabindex="-1">
@@ -336,6 +427,8 @@
     const phoneInput = document.getElementById("phone");
     const phoneError = document.getElementById("phoneError");
     const consentError = document.getElementById("consentError");
+    const termsCheckbox = document.getElementById("terms");
+    const termsError = document.getElementById("termsError");
     const successMessage = document.getElementById("successMessage");
     const options = Array.from(document.querySelectorAll(".radio-option"));
 
@@ -356,15 +449,27 @@
       phoneError.classList.remove("show");
     });
 
+    termsCheckbox.addEventListener("change", () => {
+      termsError.classList.remove("show");
+    });
+
     form.addEventListener("submit", e => {
       e.preventDefault();
       const phone = phoneInput.value.trim();
       const consent = form.querySelector('input[name="consent"]:checked');
+      const termsAccepted = termsCheckbox.checked;
 
       phoneError.classList.toggle("show", !phone);
       if (!phone) {
         phoneError.scrollIntoView({ behavior: "smooth", block: "center" });
         phoneInput.focus();
+        return;
+      }
+
+      termsError.classList.toggle("show", !termsAccepted);
+      if (!termsAccepted) {
+        termsError.scrollIntoView({ behavior: "smooth", block: "center" });
+        termsCheckbox.focus();
         return;
       }
 
@@ -377,7 +482,7 @@
       form.style.display = "none";
       successMessage.classList.add("show");
       successMessage.focus();
-      console.log("Form submitted:", { phone, consent: consent.value });
+      console.log("Form submitted:", { phone, consent: consent.value, termsAccepted });
     });
   </script>
 </body>
