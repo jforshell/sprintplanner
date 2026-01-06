@@ -1,203 +1,447 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="UTF-8" />
-<title>Sprintkapacitetsräknare – per person</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>
-  body { font-family: system-ui, sans-serif; margin: 24px; background:#fafafa; color:#222; }
-  h1 { margin-bottom: 6px; }
-  p { margin-top:0; color:#555; max-width:800px; }
-  .card { background:#fff; border:1px solid #ddd; border-radius:8px; padding:20px; margin-bottom:20px; }
-  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
-  th, td { padding:6px 8px; border-bottom:1px solid #eee; text-align:right; }
-  th:first-child, td:first-child { text-align:left; }
-  th { background:#f3f3f3; }
-  tfoot td { font-weight:600; background:#fafafa; }
-  input[type=number], select { width:100%; padding:6px; border:1px solid #ccc; border-radius:6px; font-size:14px; }
-  .btn { padding:10px 14px; border-radius:6px; cursor:pointer; background:#2fa06a; border:none; color:#fff; font-weight:600; margin-top:10px; }
-  .expl { font-size:12px; color:#666; margin-bottom:10px; }
-  .summary { font-size:14px; line-height:1.5; margin-top:16px; }
-</style>
+  <meta charset="UTF-8" />
+  <title>Sprintkapacitetsr&auml;knare &ndash; per person</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { color-scheme: light; }
+    body { font-family: "Segoe UI", "Inter", system-ui, sans-serif; margin: 24px; background:#f7f7f7; color:#1c1c1c; }
+    h1 { margin: 0 0 4px; font-size: 24px; }
+    p.lead { margin: 0 0 16px; color:#4a4a4a; max-width: 900px; }
+    .container { display:flex; gap:24px; align-items:flex-start; }
+    .form-section { flex:0 0 480px; display:flex; flex-direction:column; gap:16px; }
+    .card { background:#fff; border:1px solid #e1e1e1; border-radius:10px; padding:18px 18px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+    .card h2 { margin-top:0; margin-bottom:10px; font-size:18px; }
+    .field { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    label { font-weight:600; font-size:14px; color:#222; }
+    input[type=text],
+    input[type=date],
+    input[type=number],
+    select,
+    textarea { width:100%; padding:8px 10px; border:1px solid #ccc; border-radius:8px; font-size:14px; box-sizing:border-box; }
+    input[type=number] { text-align:right; }
+    textarea { min-height:72px; resize:vertical; }
+    .inline { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .expl { font-size:12px; color:#666; margin-top:-4px; margin-bottom:10px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+    th, td { padding:7px 8px; border-bottom:1px solid #eee; }
+    th { text-align:left; background:#f5f5f5; }
+    td.num, th.num { text-align:right; }
+    tfoot td { font-weight:700; background:#fafafa; }
+    .summary-section { flex:1; position:sticky; top:16px; }
+    .summary-box { background:#fff; border:1px solid #e1e1e1; border-radius:10px; padding:16px 18px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+    .btn { padding:11px 16px; border-radius:8px; cursor:pointer; background:#2fa06a; border:none; color:#fff; font-weight:700; font-size:15px; width:100%; }
+    .summary { font-size:14px; line-height:1.6; margin-top:14px; }
+    .summary-meta { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:8px 12px; margin-bottom:8px; }
+    .assumptions { font-size:12px; color:#555; margin-top:10px; }
+    :focus-visible { outline:3px solid #2fa06a; outline-offset:2px; box-shadow:0 0 0 2px rgba(47,160,106,0.25); }
+    .card:focus-within, .summary-box:focus-within { border-color:#2fa06a; box-shadow:0 0 0 3px rgba(47,160,106,0.15); transition:border-color 120ms ease, box-shadow 120ms ease; }
+    .summary-box:focus-visible { outline:3px solid #2fa06a; }
+    .table-focus-ring td:focus-within { background:#f0f8f3; }
+    @media (max-width: 920px) {
+      body { margin:16px; }
+      .container { flex-direction:column; }
+      .form-section { width:100%; }
+      .summary-section { position:static; width:100%; }
+    }
+  </style>
 </head>
-<style>
-  .container { display:flex; flex-wrap:nowrap; gap:24px; }
-  .form-section { flex:0 0 460px; }
-  .summary-section { flex:1; background:#fff; padding:20px; border-radius:8px; border:1px solid #ddd; height:fit-content; position:sticky; top:20px; }
-</style>
 <body>
-<div class="container">
-  <div class="form-section">
-<h1>Sprintkapacitetsräknare (per person)</h1>
-<p>Ett verktyg för att räkna ut realistisk kapacitet per sprint baserat på forskning om fokus, kontextbyten och planerat bortfall.</p>
+  <div class="container">
+    <div class="form-section">
+      <h1>Sprintkapacitetsr&auml;knare (per person)</h1>
+      <p class="lead">Ber&auml;knar realistisk kapacitet per sprint baserat p&aring; fr&aring;nvaro, arbetsfria dagar, ceremonier och brus.</p>
 
-<div class="card">
-  <h2>Sprintinformation</h2>
+      <div class="card">
+        <h2>Sprintinformation</h2>
+        <div class="field">
+          <label for="sprintName">Sprintnamn</label>
+          <input id="sprintName" type="text" placeholder="t.ex. TC Sprint 12" tabindex="1" aria-label="Sprintnamn" />
+        </div>
+        <div class="inline">
+          <div class="field">
+            <label for="sprintStart">Sprint startdatum</label>
+            <input id="sprintStart" type="date" tabindex="2" aria-label="Sprint startdatum" />
+          </div>
+          <div class="field">
+            <label for="sprintEnd">Sprint slutdatum</label>
+            <input id="sprintEnd" type="date" tabindex="3" aria-label="Sprint slutdatum" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="sprintDate">Sprintdatum</label>
+          <input id="sprintDate" type="text" placeholder="t.ex. 24 nov &ndash; 5 dec" readonly tabindex="4" aria-label="Sprintdatum sammanfattning" />
+        </div>
+        <div class="field">
+          <label for="sprintGoal">Sprintm&aring;l</label>
+          <textarea id="sprintGoal" placeholder="Beskriv sprintens m&aring;l..." tabindex="5" aria-label="Sprintm&aring;l"></textarea>
+        </div>
+        <div class="field">
+          <label for="redDays">Arbetsfria dagar inom sprinten</label>
+          <input id="redDays" type="number" min="0" step="0.5" value="0" inputmode="decimal" tabindex="6" aria-label="Arbetsfria dagar inom sprinten" />
+          <div class="expl">Fylls automatiskt fr&aring;n datum + helgdagar (kan justeras manuellt).</div>
+        </div>
+      </div>
 
-  <label>Sprintnamn</label>
-  <input id="sprintName" type="text" placeholder="t.ex. TC Sprint 12">
-  <br><br>
+      <div class="card">
+        <h2>Gemensamma sprintinst&auml;llningar</h2>
+        <div class="field">
+          <label for="brusPct">Standard-brus (%)</label>
+          <input id="brusPct" type="number" min="0" max="50" step="1" value="20" tabindex="7" aria-label="Standard-brus i procent" />
+          <div class="expl">Brus = fokusf&ouml;rlust, kontextbyten, kommunikation och &ouml;vrigt of&ouml;ruts&auml;gbart.</div>
+        </div>
+        <div class="field">
+          <label for="techDebtPerson">Vem g&ouml;r tech-debt denna sprint?</label>
+          <select id="techDebtPerson" tabindex="8" aria-label="Vem g&ouml;r tech-debt denna sprint">
+            <option>Carina</option>
+            <option>Olle</option>
+            <option>Torbj&ouml;rn</option>
+            <option>Daniel</option>
+            <option>Felix</option>
+            <option>Boris</option>
+          </select>
+          <div class="expl">Den som g&ouml;r tech-debt tappar ca 7,25 timmar denna sprint.</div>
+        </div>
+      </div>
 
-  <label>Sprintdatum</label>
-  <input id="sprintDate" type="text" placeholder="t.ex. 24 nov – 5 dec">
-  <br><br>
+      <div class="card">
+        <h2>Utvecklare &ndash; Fr&aring;nvaro &amp; &ouml;vrigt bortfall</h2>
+        <table class="table-focus-ring focus-table dev-table">
+          <thead>
+            <tr>
+              <th>Person</th>
+              <th class="num">Fr&aring;nvaro (dagar)</th>
+              <th class="num">&Ouml;vrigt (dagar)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Carina</td><td class="num"><input id="abs_Carina" type="number" step="0.5" value="0" tabindex="9" aria-label="Fr&aring;nvaro dagar Carina" /></td><td class="num"><input id="oth_Carina" type="number" step="0.5" value="0" tabindex="10" aria-label="&Ouml;vrigt dagar Carina" /></td></tr>
+            <tr><td>Olle</td><td class="num"><input id="abs_Olle" type="number" step="0.5" value="0" tabindex="11" aria-label="Fr&aring;nvaro dagar Olle" /></td><td class="num"><input id="oth_Olle" type="number" step="0.5" value="0" tabindex="12" aria-label="&Ouml;vrigt dagar Olle" /></td></tr>
+            <tr><td>Torbj&ouml;rn</td><td class="num"><input id="abs_Torbjorn" type="number" step="0.5" value="0" tabindex="13" aria-label="Fr&aring;nvaro dagar Torbj&ouml;rn" /></td><td class="num"><input id="oth_Torbjorn" type="number" step="0.5" value="0" tabindex="14" aria-label="&Ouml;vrigt dagar Torbj&ouml;rn" /></td></tr>
+            <tr><td>Daniel</td><td class="num"><input id="abs_Daniel" type="number" step="0.5" value="0" tabindex="15" aria-label="Fr&aring;nvaro dagar Daniel" /></td><td class="num"><input id="oth_Daniel" type="number" step="0.5" value="0" tabindex="16" aria-label="&Ouml;vrigt dagar Daniel" /></td></tr>
+            <tr><td>Felix</td><td class="num"><input id="abs_Felix" type="number" step="0.5" value="0" tabindex="17" aria-label="Fr&aring;nvaro dagar Felix" /></td><td class="num"><input id="oth_Felix" type="number" step="0.5" value="0" tabindex="18" aria-label="&Ouml;vrigt dagar Felix" /></td></tr>
+            <tr><td>Boris</td><td class="num"><input id="abs_Boris" type="number" step="0.5" value="0" tabindex="19" aria-label="Fr&aring;nvaro dagar Boris" /></td><td class="num"><input id="oth_Boris" type="number" step="0.5" value="0" tabindex="20" aria-label="&Ouml;vrigt dagar Boris" /></td></tr>
+          </tbody>
+        </table>
+      </div>
 
-  <label>Sprintmål</label>
-  <textarea id="sprintGoal" rows="3" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:6px; font-size:14px;" placeholder="Beskriv sprintens mål..."></textarea>
-  <br><br>
+      <div class="card">
+        <h2>QA &ndash; Fr&aring;nvaro &amp; &ouml;vrigt bortfall</h2>
+        <table class="table-focus-ring focus-table qa-table">
+          <thead>
+            <tr>
+              <th>Person</th>
+              <th class="num">Fr&aring;nvaro (dagar)</th>
+              <th class="num">&Ouml;vrigt (dagar)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Manuel</td><td class="num"><input id="qa_abs_Manuel" type="number" step="0.5" value="0" tabindex="21" aria-label="Fr&aring;nvaro dagar Manuel" /></td><td class="num"><input id="qa_oth_Manuel" type="number" step="0.5" value="0" tabindex="22" aria-label="&Ouml;vrigt dagar Manuel" /></td></tr>
+            <tr><td>Harkanwal</td><td class="num"><input id="qa_abs_Harkanwal" type="number" step="0.5" value="0" tabindex="23" aria-label="Fr&aring;nvaro dagar Harkanwal" /></td><td class="num"><input id="qa_oth_Harkanwal" type="number" step="0.5" value="0" tabindex="24" aria-label="&Ouml;vrigt dagar Harkanwal" /></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-  <label>Sprint startdatum</label>
-  <input id="sprintStart" type="date">
-
-  <label>Sprint slutdatum</label>
-  <input id="sprintEnd" type="date">
-  <br><br>
-
-  <label>Arbetsfria dagar inom sprinten</label>
-  <input id="redDays" type="number" min="0" value="0"> inom sprinten</label>
-  <input id="redDays" type="number" min="0" value="0">
-</div>
-
-<div class="card">
-  <h2>Gemensamma sprintinställningar</h2></h2></h2>
-
-  <label>Standard-brus (%)</label>
-  <input id="brusPct" type="number" min="0" max="50" value="20">
-  <div class="expl">Brus = fokusförlust, kontextbyten, kommunikation och övrigt oförutsägbart.</div>
-
-  <label>Vem gör tech-debt denna sprint?</label>
-  <select id="techDebtPerson">
-    <option>Carina</option>
-    <option>Olle</option>
-    <option>Torbjörn</option>
-    <option>Daniel</option>
-    <option>Felix</option>
-    <option>Boris</option>
-  </select>
-  <div class="expl">Den som gör tech-debt tappar ca 7.25 timmar denna sprint.</div>
-</div>
-    <div class="card">
-  <h2>Frånvaro & övrigt bortfall per person</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Person</th>
-        <th>Frånvaro (dagar)</th>
-        <th>Övrigt (dagar)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>Carina</td><td><input id="abs_Carina" type="number" step="0.5" value="0"></td><td><input id="oth_Carina" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Olle</td><td><input id="abs_Olle" type="number" step="0.5" value="0"></td><td><input id="oth_Olle" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Torbjörn</td><td><input id="abs_Torbjorn" type="number" step="0.5" value="0"></td><td><input id="oth_Torbjorn" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Daniel</td><td><input id="abs_Daniel" type="number" step="0.5" value="0"></td><td><input id="oth_Daniel" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Felix</td><td><input id="abs_Felix" type="number" step="0.5" value="0"></td><td><input id="oth_Felix" type="number" step="0.5" value="0"></td></tr>
-      <tr><td>Boris</td><td><input id="abs_Boris" type="number" step="0.5" value="0"></td><td><input id="oth_Boris" type="number" step="0.5" value="0"></td></tr>
-    </tbody></table>
+    <div class="summary-section">
+      <div class="summary-box" tabindex="26" role="region" aria-label="Sammanfattning">
+        <button class="btn" type="button" tabindex="25" aria-label="Ber&auml;kna kapacitet">Ber&auml;kna kapacitet</button>
+        <div id="output" class="summary" tabindex="27" aria-live="polite"></div>
+      </div>
     </div>
   </div>
-  <div class="summary-section">
-    <button class="btn" onclick="calculate()">Beräkna kapacitet</button>
 
-<div id="output" class="summary" style="margin-top:20px;"></div>
+  <script>
+    const people = [
+      { name: "Carina", key: "Carina" },
+      { name: "Olle", key: "Olle" },
+      { name: "Torbj\u00f6rn", key: "Torbjorn" },
+      { name: "Daniel", key: "Daniel" },
+      { name: "Felix", key: "Felix" },
+      { name: "Boris", key: "Boris" }
+    ];
+    const qaPeople = [
+      { name: "Manuel", key: "Manuel" },
+      { name: "Harkanwal", key: "Harkanwal" }
+    ];
+    const calculateBtn = document.querySelector(".btn");
+    const summaryOutput = document.getElementById("output");
+    const focusOrder = Array.from(document.querySelectorAll("[tabindex]")).sort((a, b) => a.tabIndex - b.tabIndex);
 
-<script>
-// Svenska helgdagar 2025–2026 (YYYY-MM-DD)
-const holidays = [
-  // 2025 arbetsfria dagar
-  "2025-06-20", // Midsommarafton
-  "2025-12-24", // Julafton
-  "2025-12-25", // Juldagen
-  "2025-12-26", // Annandag jul
-  "2025-12-31", // Nyårsafton
-  "2026-01-01", // Nyårsdagen
+    // Svenska helgdagar 2025-2026 (YYYY-MM-DD)
+    const holidays = [
+      // 2025 arbetsfria dagar
+      "2025-06-20", // Midsommarafton
+      "2025-12-24", // Julafton
+      "2025-12-25", // Juldagen
+      "2025-12-26", // Annandag jul
+      "2025-12-31", // Nyarsafton
+      "2026-01-01", // Nyarsdagen
 
-  // 2026 arbetsfria dagar
-  "2026-06-19", // Midsommarafton
-  "2026-12-24", // Julafton
-  "2026-12-25", // Juldagen
-  "2026-12-26", // Annandag jul
-  "2026-12-31", // Nyårsafton
-];
+      // 2026 arbetsfria dagar
+      "2026-06-19", // Midsommarafton
+      "2026-12-24", // Julafton
+      "2026-12-25", // Juldagen
+      "2026-12-26", // Annandag jul
+      "2026-12-31"  // Nyarsafton
+    ];
 
-function calcRedDays() {
-  const start = document.getElementById("sprintStart").value;
-  const end = document.getElementById("sprintEnd").value;
-  if (!start || !end) {
-    document.getElementById("redDays").value = 0;
-    return;
-  }
-  const s = new Date(start);
-  const e = new Date(end);
-  let count = 0;
-  holidays.forEach(h => {
-    const d = new Date(h);
-    if (d >= s && d <= e) count++;
-  });
-  document.getElementById("redDays").value = count;
-}
+    const dayHours = 7.25;
+    const sprintGrossHours = 72.5; // tva veckor * 36.25h
+    const ceremoniesHours = 11;    // refinement, planning, retro, standups, CTO 1:1
+    const techDebtHours = 7.25;    // en dag
 
-function calculate() {
-  const people = ["Carina","Olle","Torbjörn","Daniel","Felix","Boris"];
-  const redDays = parseFloat(document.getElementById("redDays").value) || 0;
-  const brusPct = parseFloat(document.getElementById("brusPct").value) || 0;
-  const tech = document.getElementById("techDebtPerson").value;
+    function escapeHtml(str = "") {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
 
-  const dayH = 7.25;
-  const gross = 72.5;
-  const ceremonies = 11; // refinement + planning + retro + standups + CTO 1:1
-  const techDebtH = 7.25; // ungefär en dag
+    function parseIsoDateLocal(iso) {
+      const [year, month, day] = String(iso).split("-").map(Number);
+      if (!year || !month || !day) return null;
+      return new Date(year, month - 1, day);
+    }
 
-  let html = "<h2>Kapacitet per person</h2><table><thead><tr><th>Person</th><th>Brutto h</th><th>Bortfall h</th><th>Kvar h</th><th>Kvar SP</th></tr></thead><tbody>";
+    function setIsoDate(input, date) {
+      const yr = date.getFullYear();
+      const mo = String(date.getMonth() + 1).padStart(2, "0");
+      const da = String(date.getDate()).padStart(2, "0");
+      input.value = `${yr}-${mo}-${da}`;
+    }
 
-  let totalGross = 0, totalLoss = 0, totalLeft = 0;
+    function calcRedDays() {
+      const startVal = document.getElementById("sprintStart").value;
+      const endVal = document.getElementById("sprintEnd").value;
+      if (!startVal || !endVal) {
+        return;
+      }
+      const start = startVal <= endVal ? startVal : endVal;
+      const end = startVal <= endVal ? endVal : startVal;
+      let count = 0;
+      holidays.forEach(h => {
+        if (h >= start && h <= end) count += 1;
+      });
+      document.getElementById("redDays").value = count;
+    }
 
-  people.forEach(p => {
-    const idBase = p.replace("ö","o").replace("Ö","O").replace("ä","a").replace("Ä","A").replace("å","a").replace("Å","A");
-    const absDays = parseFloat(document.getElementById("abs_"+idBase).value) || 0;
-    const othDays = parseFloat(document.getElementById("oth_"+idBase).value) || 0;
+    function updateSprintDisplay() {
+      const sVal = document.getElementById("sprintStart").value;
+      const eVal = document.getElementById("sprintEnd").value;
+      if (!sVal || !eVal) return;
 
-    const abs = absDays * dayH;
-    const oth = othDays * dayH;
-    const redLoss = redDays * dayH;
-    const cer = ceremonies;
-    const techLoss = (p === tech) ? techDebtH : 0;
+      const startDate = parseIsoDateLocal(sVal);
+      const endDate = parseIsoDateLocal(eVal);
+      if (!startDate || !endDate) return;
+      const opts = { day: "numeric", month: "short" };
+      const startStr = startDate.toLocaleDateString("sv-SE", opts).replace(".", "");
+      const endStr = endDate.toLocaleDateString("sv-SE", opts).replace(".", "");
+      document.getElementById("sprintDate").value = `${startStr} - ${endStr}`;
+    }
 
-    const sumLoss = abs + oth + redLoss + cer + techLoss;
-    const withBrus = sumLoss + ((gross - sumLoss) * (brusPct/100));
-    const left = gross - withBrus;
+    function calculate() {
+      const redDays = parseFloat(document.getElementById("redDays").value) || 0;
+      const brusPct = parseFloat(document.getElementById("brusPct").value) || 0;
+      const tech = document.getElementById("techDebtPerson").value;
+      const sprintName = escapeHtml(document.getElementById("sprintName").value || "Sprint");
+      const sprintDate = escapeHtml(document.getElementById("sprintDate").value || "Datum ej satt");
+      const sprintGoal = escapeHtml(document.getElementById("sprintGoal").value || "Inget m\u00e5l angivet");
 
-    totalGross += gross;
-    totalLoss += withBrus;
-    totalLeft += left;
+      let rows = "";
+      let totalGross = 0;
+      let totalLoss = 0;
+      let totalLeft = 0;
 
-    html += `<tr><td>${p}</td><td>${gross.toFixed(1)}</td><td>${withBrus.toFixed(1)}</td><td>${left.toFixed(1)}</td><td>${(left/dayH).toFixed(2)}</td></tr>`;
-  });
+      people.forEach(person => {
+        const absDays = parseFloat(document.getElementById(`abs_${person.key}`).value) || 0;
+        const othDays = parseFloat(document.getElementById(`oth_${person.key}`).value) || 0;
 
-  html += `</tbody><tfoot><tr><td>Totalt</td><td>${totalGross.toFixed(1)}</td><td>${totalLoss.toFixed(1)}</td><td>${totalLeft.toFixed(1)}</td><td>${(totalLeft/dayH).toFixed(2)}</td></tr></tfoot></table>`;
+        const abs = absDays * dayHours;
+        const oth = othDays * dayHours;
+        const redLoss = redDays * dayHours;
+        const techLoss = person.name === tech ? techDebtHours : 0;
 
-  document.getElementById("output").innerHTML = html;
-}
+        const baseLoss = abs + oth + redLoss + ceremoniesHours + techLoss;
+        const withBrus = baseLoss + Math.max(0, sprintGrossHours - baseLoss) * (brusPct / 100);
+        const left = Math.max(sprintGrossHours - withBrus, 0);
 
-// Auto-fill sprintDate when both dates selected
-function updateSprintDisplay() {
-  const s = document.getElementById("sprintStart").value;
-  const e = document.getElementById("sprintEnd").value;
-  if (s && e) {
-    const startDate = new Date(s);
-    const endDate = new Date(e);
-    const opts = { day: 'numeric', month: 'short' };
-    const startStr = startDate.toLocaleDateString('sv-SE', opts).replace('.', '');
-    const endStr = endDate.toLocaleDateString('sv-SE', opts).replace('.', '');
-    document.getElementById("sprintDate").value = `${startStr} – ${endStr}`;
-  }
-}
+        totalGross += sprintGrossHours;
+        totalLoss += withBrus;
+        totalLeft += left;
 
-document.getElementById("sprintStart").addEventListener("change", () => { calcRedDays(); updateSprintDisplay(); });
-document.getElementById("sprintEnd").addEventListener("change", () => { calcRedDays(); updateSprintDisplay(); });
-</script>
-  </div>
-</div>
+        rows += `<tr>
+          <td>${person.name}</td>
+          <td class="num" style="font-weight:700; background:#f8faf2;">${left.toFixed(1)}</td>
+          <td class="num" style="font-weight:700; background:#f8faf2;">${(left / dayHours).toFixed(2)}</td>
+          <td class="num">${sprintGrossHours.toFixed(1)}</td>
+          <td class="num">${withBrus.toFixed(1)}</td>
+        </tr>`;
+      });
+
+      // QA calculations (no tech-debt logic)
+      let qaRows = "";
+      let qaTotalGross = 0;
+      let qaTotalLoss = 0;
+      let qaTotalLeft = 0;
+      qaPeople.forEach(person => {
+        const absDays = parseFloat(document.getElementById(`qa_abs_${person.key}`).value) || 0;
+        const othDays = parseFloat(document.getElementById(`qa_oth_${person.key}`).value) || 0;
+
+        const abs = absDays * dayHours;
+        const oth = othDays * dayHours;
+        const redLoss = redDays * dayHours;
+
+        const baseLoss = abs + oth + redLoss + ceremoniesHours;
+        const withBrus = baseLoss + Math.max(0, sprintGrossHours - baseLoss) * (brusPct / 100);
+        const left = Math.max(sprintGrossHours - withBrus, 0);
+
+        qaTotalGross += sprintGrossHours;
+        qaTotalLoss += withBrus;
+        qaTotalLeft += left;
+
+        qaRows += `<tr>
+          <td>${person.name}</td>
+          <td class="num" style="font-weight:700; background:#f8faf2;">${left.toFixed(1)}</td>
+          <td class="num" style="font-weight:700; background:#f8faf2;">${(left / dayHours).toFixed(2)}</td>
+          <td class="num">${sprintGrossHours.toFixed(1)}</td>
+          <td class="num">${withBrus.toFixed(1)}</td>
+        </tr>`;
+      });
+
+      const summaryHtml = `
+        <h2>Sammanfattning</h2>
+        <div class="summary-meta">
+          <div><strong>Sprint:</strong> ${sprintName}</div>
+          <div><strong>Datum:</strong> ${sprintDate}</div>
+          <div><strong>M&aring;l:</strong> ${sprintGoal}</div>
+        </div>
+        <p>Ber&auml;kningen inkluderar ${redDays.toFixed(1)} arbetsfria dagar och ${brusPct}% brus. ${escapeHtml(tech)} g&ouml;r tech-debt denna sprint.</p>
+        <h3>Utvecklare &ndash; Kapacitet</h3>
+        <table>
+          <thead>
+            <tr><th>Person</th><th class="num" style="font-weight:700; background:#f8faf2;">Kvar h</th><th class="num" style="font-weight:700; background:#f8faf2;">Kvar SP</th><th class="num">Brutto h</th><th class="num">Bortfall h</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+          <tfoot>
+            <tr><td>Totalt</td><td class="num" style="font-weight:700; background:#f8faf2;">${totalLeft.toFixed(1)}</td><td class="num" style="font-weight:700; background:#f8faf2;">${(totalLeft / dayHours).toFixed(2)}</td><td class="num">${totalGross.toFixed(1)}</td><td class="num">${totalLoss.toFixed(1)}</td></tr>
+          </tfoot>
+        </table>
+        <h3>QA &ndash; Kapacitet</h3>
+        <table>
+          <thead>
+            <tr><th>Person</th><th class="num" style="font-weight:700; background:#f8faf2;">Kvar h</th><th class="num" style="font-weight:700; background:#f8faf2;">Kvar SP</th><th class="num">Brutto h</th><th class="num">Bortfall h</th></tr>
+          </thead>
+          <tbody>${qaRows}</tbody>
+          <tfoot>
+            <tr><td>Totalt</td><td class="num" style="font-weight:700; background:#f8faf2;">${qaTotalLeft.toFixed(1)}</td><td class="num" style="font-weight:700; background:#f8faf2;">${(qaTotalLeft / dayHours).toFixed(2)}</td><td class="num">${qaTotalGross.toFixed(1)}</td><td class="num">${qaTotalLoss.toFixed(1)}</td></tr>
+          </tfoot>
+        </table>
+        <div class="assumptions">Antaganden: 72,5h brutto per person, 11h ceremonier, 1 SP = 7,25h.</div>
+      `;
+
+      document.getElementById("output").innerHTML = summaryHtml;
+    }
+
+    function handleNumberArrows(e) {
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        e.preventDefault();
+        const stepFn = e.key === "ArrowUp" ? "stepUp" : "stepDown";
+        if (typeof e.target[stepFn] === "function") {
+          e.target[stepFn]();
+          e.target.dispatchEvent(new Event("input", { bubbles: true }));
+          e.target.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+    }
+
+    document.querySelectorAll("input[type=number]").forEach(input => {
+      input.addEventListener("keydown", handleNumberArrows);
+    });
+
+    function handleDateKeys(e) {
+      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(e.key)) {
+        e.preventDefault();
+        const delta = e.key === "ArrowUp" ? 1 : e.key === "ArrowDown" ? -1 : e.key === "PageUp" ? 7 : -7;
+        const base = e.target.value ? parseIsoDateLocal(e.target.value) : new Date();
+        if (!base) return;
+        base.setDate(base.getDate() + delta);
+        setIsoDate(e.target, base);
+        e.target.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+
+    document.querySelectorAll("input[type=date]").forEach(input => {
+      input.addEventListener("keydown", handleDateKeys);
+    });
+
+    function handleAutoUpdate(e) {
+      const target = e.target;
+      if (target.id === "sprintStart" || target.id === "sprintEnd") {
+        calcRedDays();
+        updateSprintDisplay();
+      }
+      calculate();
+    }
+
+    function initAutoCalc() {
+      document.querySelectorAll("input, select, textarea").forEach(el => {
+        const useChange = el.type === "date" || el.tagName === "SELECT";
+        el.addEventListener(useChange ? "change" : "input", handleAutoUpdate);
+      });
+    }
+
+    function setupTableTrap(selector) {
+      const inputs = Array.from(document.querySelectorAll(`${selector} input[type=number]`));
+      inputs.forEach((input, idx) => {
+        input.addEventListener("keydown", e => {
+          if (e.key === "Tab") {
+            e.preventDefault();
+            const dir = e.shiftKey ? -1 : 1;
+            if (!e.shiftKey && idx < inputs.length - 1) {
+              inputs[idx + 1].focus();
+              return;
+            }
+            if (e.shiftKey && idx > 0) {
+              inputs[idx - 1].focus();
+              return;
+            }
+            const currentIndex = focusOrder.indexOf(input);
+            let nextIndex = currentIndex + dir;
+            if (nextIndex < 0) nextIndex = focusOrder.length - 1;
+            if (nextIndex >= focusOrder.length) nextIndex = 0;
+            focusOrder[nextIndex].focus();
+          }
+        });
+      });
+    }
+
+    setupTableTrap(".dev-table");
+    setupTableTrap(".qa-table");
+
+    function handleShortcuts(e) {
+      const isEnter = e.key === "Enter" && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey;
+      const isCtrlEnter = e.key === "Enter" && (e.ctrlKey || e.metaKey);
+      if (isEnter || isCtrlEnter) {
+        e.preventDefault();
+        calculateBtn.focus();
+        calculate();
+      }
+      if (e.key === "Escape") {
+        summaryOutput.innerHTML = "";
+        summaryOutput.setAttribute("aria-label", "Sammanfattning rensad");
+        summaryOutput.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleShortcuts);
+    calculateBtn.addEventListener("click", calculate);
+    initAutoCalc();
+    calculate();
+
+  </script>
 </body>
 </html>
-  
